@@ -13,7 +13,7 @@ void CParam::usage()
 
 bool CParam::parse(int argc, char* argv[])
 {
-	if (argc != 3) {
+	if (argc < 3 || 4 < argc) {
 		usage();
 		return false;
 	}
@@ -21,6 +21,13 @@ bool CParam::parse(int argc, char* argv[])
 	interface = std::string(argv[1]);
 	targetMac = std::string(argv[2]);
 		
+	if(argc == 4)
+	{
+		channel = std::stoi(argv[3]);
+	}else
+	{
+		channel = 0;
+	}
 
 	return true;
 }

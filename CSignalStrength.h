@@ -46,5 +46,6 @@ private:
     status getWirelessPacket(pcap_t* pcap);
     status convertPacket();
 	void printLog();
-	
+	void setChannel();
+
 };

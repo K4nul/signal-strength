@@ -4,7 +4,7 @@ CSignalStrength::CSignalStrength(CParam parameter) : param(parameter)
 {
     transmitterInfo.transmitterAddr  = param.targetMac;
 	char errbuf[PCAP_ERRBUF_SIZE];
-	pcap = pcap_open_live(param.interface.data(), BUFSIZ, 1, 500, errbuf);
+	pcap = pcap_open_live(param.interface.data(), BUFSIZ, 1, 1000, errbuf);
 	if (pcap == NULL) {
 		fprintf(stderr, "pcap_open_live(%s) return null - %s\n", param.interface.data(), errbuf);
         exit(1);
@@ -23,10 +23,11 @@ int CSignalStrength::signalStrength()
     
     initscr();
     move(0,0);
-    
+
+    setChannel();
     while(1)
     {   
-        
+    
         int status = getWirelessPacket(pcap);
         
         if (status == FAIL)
@@ -35,10 +36,11 @@ int CSignalStrength::signalStrength()
             continue;
         
         status = convertPacket();
-        if (status == NEXT)    
+        if (status == NEXT)
             continue;
-            
+    
         printLog();
+
     }
 
     getch();
@@ -48,9 +50,11 @@ int CSignalStrength::signalStrength()
 
 }
 
+
+
 status CSignalStrength::getWirelessPacket(pcap_t* pcap)
 {
-  
+
 	struct pcap_pkthdr* header;
 	int res = pcap_next_ex(pcap, &header, &packet);
 	if (res == 0)
@@ -91,3 +95,11 @@ void CSignalStrength::printLog()
 
 }
 
+void CSignalStrength::setChannel()
+{
+    if(param.channel == 0)
+        return;
+    std::string strCommand = "sudo iwconfig " +param.interface + " channel " + std::to_string(param.channel);
+    std::system(strCommand.data());
+
+}
